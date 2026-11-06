@@ -1,6 +1,6 @@
 ﻿namespace PharmacyCoursework
 {
-    partial class Form1
+    partial class AuthForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -30,13 +30,14 @@
         {
             SuspendLayout();
             // 
-            // Form1
+            // AuthForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(980, 591);
-            Name = "Form1";
-            Text = "Form1";
+            ClientSize = new Size(1378, 828);
+            Name = "AuthForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Authorise";
             Load += Form1_Load;
             ResumeLayout(false);
         }
