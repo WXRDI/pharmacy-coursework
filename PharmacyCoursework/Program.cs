@@ -1,9 +1,10 @@
-using PharmacyCoursework.src;
 
 namespace PharmacyCoursework
 {
     internal static class Program
     {
+        private static AuthForm auth = new AuthForm(); //fist form to show
+        private static MainForm main = new MainForm(); //main form
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -14,7 +15,7 @@ namespace PharmacyCoursework
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Database.Init();
-            Application.Run(new AuthForm());
+            Application.Run(auth);
         }
     }
 }

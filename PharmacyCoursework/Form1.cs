@@ -11,5 +11,20 @@ namespace PharmacyCoursework
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string pass = textBoxPass.Text;
+            string login = textBoxLogin.Text;
+
+            (int id, string role)? acc = PharmacyDbAccess.Login(pass, login);
+
+            if (acc == null)
+            {
+                Form g = new MainForm();
+                g.Show();
+                this.Hide();
+            }
+        }
     }
 }

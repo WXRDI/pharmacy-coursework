@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace PharmacyCoursework.src;
+namespace PharmacyCoursework;
 
 public static class Database
 {
