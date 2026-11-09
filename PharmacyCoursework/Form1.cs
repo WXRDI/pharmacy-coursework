@@ -19,9 +19,9 @@ namespace PharmacyCoursework
 
             (int id, string role)? acc = PharmacyDbAccess.Login(pass, login);
 
-            if (acc == null)
+            if (acc != null)
             {
-                Form g = new MainForm();
+                Form g = new MainForm(acc);
                 g.Show();
                 this.Hide();
             }

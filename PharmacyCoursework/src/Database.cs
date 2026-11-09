@@ -71,5 +71,23 @@ public static class Database
         );";
 
         cmd.ExecuteNonQuery();
+
+        CreateFirstManager("Ivan", "admin", "admin");
+    }
+
+    public static void CreateFirstManager(string name, string login, string pass)
+    {
+        using var conn = Database.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"
+        
+        INSERT INTO employees (full_name, login, password_hash, role) 
+        SELECT $n, $l, $h, $r
+        WHERE (SELECT COUNT(*) FROM employees) = 0;";
+        cmd.Parameters.AddWithValue("$n", name);
+        cmd.Parameters.AddWithValue("$l", login);
+        cmd.Parameters.AddWithValue("$h", PasswordHasher.Hash(pass));
+        cmd.Parameters.AddWithValue("$r", "manager");
+        cmd.ExecuteNonQuery();
     }
 }

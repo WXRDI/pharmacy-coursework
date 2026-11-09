@@ -2,15 +2,19 @@
 {
     public partial class MainForm : Form
     {
+        int loggedUserId;
+        string loggedUserRole;
         public MainForm()
         {
             InitializeComponent();
         }
 
-        public MainForm((int id, string role) loginInfo)
+        public MainForm((int id, string role)? loginInfo)
         {
             InitializeComponent();
-
+            if (loginInfo == null) throw new ArgumentNullException(nameof(loginInfo), "Login info (user id and role) cant be null");
+            loggedUserId = loginInfo.Value.id;
+            loggedUserRole = loginInfo.Value.role;
 
         }
 
