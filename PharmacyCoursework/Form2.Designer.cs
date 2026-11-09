@@ -75,19 +75,20 @@
             // logOutToolStripMenuItem
             // 
             logOutToolStripMenuItem.Name = "logOutToolStripMenuItem";
-            logOutToolStripMenuItem.Size = new Size(201, 34);
+            logOutToolStripMenuItem.Size = new Size(270, 34);
             logOutToolStripMenuItem.Text = "Log out";
+            logOutToolStripMenuItem.Click += logOutToolStripMenuItem_Click;
             // 
             // infoToolStripMenuItem
             // 
             infoToolStripMenuItem.Name = "infoToolStripMenuItem";
-            infoToolStripMenuItem.Size = new Size(201, 34);
+            infoToolStripMenuItem.Size = new Size(270, 34);
             infoToolStripMenuItem.Text = "Info";
             // 
             // createNewToolStripMenuItem
             // 
             createNewToolStripMenuItem.Name = "createNewToolStripMenuItem";
-            createNewToolStripMenuItem.Size = new Size(201, 34);
+            createNewToolStripMenuItem.Size = new Size(270, 34);
             createNewToolStripMenuItem.Text = "Create new";
             // 
             // stockToolStripMenuItem
@@ -231,6 +232,7 @@
             Text = "Stock";
             FormClosed += MainForm_FormClosed;
             Load += Form2_Load;
+            Shown += MainForm_Shown;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();

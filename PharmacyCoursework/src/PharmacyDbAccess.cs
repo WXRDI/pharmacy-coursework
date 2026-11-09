@@ -1,44 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
+﻿using System.Security.Cryptography;
 using System.Text;
 
 namespace PharmacyCoursework
 {
     internal class PharmacyDbAccess
     {
+        static List<string> roles = ["manager", "pharmacist"]; //TODO: remove later if not used
 
-        static string? userRole;
-        static int? userId;
-        static List<string> roles = ["manager", "pharmacist"];
+        public static (int id, string name, string login, string role)? ReadEmployees(string searchKey, string value) //reads from emplyees table and returns all
+        {                                                                                                      //info except password hash
+            var allowedKeys = new List<string> { "id", "full_name", "login", "role" };
+            if (!allowedKeys.Contains(searchKey))
+            {
+                throw new ArgumentException("Invalid key name", nameof(searchKey));
+            }
 
-        public static void AuthoriseUser ((int id, string role) authData)
-        {
-            userId = authData.id;
-            userRole = authData.role;
+            using var conn = Database.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = $"SELECT id, full_name, login, role FROM employees WHERE {searchKey} = $v";
+            cmd.Parameters.AddWithValue("$v", value);
+            using var r = cmd.ExecuteReader();
+            if (!r.Read()) return null;
+            return (r.GetInt32(0), r.GetString(1), r.GetString(2), r.GetString(3) );
         }
 
         public static void LogOut()
         {
-            userId = null;
-            userRole = null;
+            Properties.Settings.Default.AutoLogIn = false;
+            Properties.Settings.Default.RememberMe = false;
+            Properties.Settings.Default.UserToken = null;
+            Properties.Settings.Default.Save();
         }
 
-        public static bool AddEmployeeInDatabase(string role)
-        {
-            for (int i = 0; i < roles.Count; i++)
-            {
-                if (role.ToLower().Trim() == roles[i])
-                {
-                    userRole = roles[i];
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        //TODO: Passwrd and login check, read write methods, comments
+        //TODO: read write methods
         public static bool LoginCheck()
         {
             return false;
@@ -68,5 +62,75 @@ namespace PharmacyCoursework
             if (!PasswordHasher.Verify(password, r.GetString(1))) return null;
             return (r.GetInt32(0), r.GetString(2));
         }
+
+        public static (int id, string role) FindRoleFromToken() // used in auto log in
+        {
+            string userId;
+
+            string encryptedString = Properties.Settings.Default.UserToken;
+
+            if (!string.IsNullOrEmpty(encryptedString))
+            {
+                byte[] encryptedData = Convert.FromBase64String(encryptedString);
+                byte[] decryptedData = ProtectedData.Unprotect(encryptedData, null, DataProtectionScope.CurrentUser);
+                userId = Encoding.UTF8.GetString(decryptedData);
+            }
+            else throw new Exception("No user id token saved");
+
+            string? role = ReadEmployees("id", userId).Value.role;
+            if (role == null ) throw new ArgumentNullException(nameof(role), "Cant be null");
+            if (!int.TryParse(userId, out int intUserId)) throw new ArgumentException("Unable to convert user id from string to int.");
+            return (intUserId, role);
+        }
+
+        public static void OnLoginSuccess(string token, bool isRememberMeActive) // encrypts id to store and use to auto login
+        {
+            Properties.Settings.Default.RememberMe = isRememberMeActive;
+
+            if (isRememberMeActive)
+            {
+                byte[] toEncrypt = Encoding.UTF8.GetBytes(token);
+                byte[] encryptedData = ProtectedData.Protect(toEncrypt, null, DataProtectionScope.CurrentUser);
+
+                Properties.Settings.Default.UserToken = Convert.ToBase64String(encryptedData);
+                Properties.Settings.Default.AutoLogIn = true;
+            }
+            else
+            {
+                Properties.Settings.Default.UserToken = string.Empty;
+                Properties.Settings.Default.AutoLogIn = false;
+            }
+
+            Properties.Settings.Default.Save();
+        }
+
+        public static bool AutoLogIn() //returns true if user has valid token
+        {
+            if (Properties.Settings.Default.RememberMe && Properties.Settings.Default.AutoLogIn)
+            {
+                try
+                {
+                    string encryptedString = Properties.Settings.Default.UserToken;
+                    if (!string.IsNullOrEmpty(encryptedString))
+                    {
+                        //open form 2
+                        return true;
+                    }
+                }
+
+                catch (CryptographicException)
+                {
+                    Properties.Settings.Default.RememberMe = false;
+                    Properties.Settings.Default.AutoLogIn = false;
+                    Properties.Settings.Default.UserToken = string.Empty;
+                    Properties.Settings.Default.Save();
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+
     }
 }

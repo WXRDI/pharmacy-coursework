@@ -3,8 +3,7 @@ namespace PharmacyCoursework
 {
     internal static class Program
     {
-        private static AuthForm auth = new AuthForm(); //fist form to show
-        private static MainForm main = new MainForm(); //main form
+        private static AuthForm auth = new AuthForm(); //fist form to show 
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
